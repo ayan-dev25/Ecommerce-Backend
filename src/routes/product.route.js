@@ -1,5 +1,6 @@
 import express from 'express'
-import { getAllProducts } from '../middlewares/product.middleware.js';
+import { createProduct, getAllProducts } from '../controllers/product.controller.js';
+
 
 const router = express.Router();
 
@@ -7,9 +8,7 @@ router.get('/products', getAllProducts)
 router.get('/products/:id',(req,res)=>{
     res.send('particular product')
 })
-router.post('/products',(req,res)=>{
-    res.send('post products')
-})
+router.post('/products',createProduct)
 router.put('/products/:id',(req,res)=>{
     res.send('update paricular product')
 })
