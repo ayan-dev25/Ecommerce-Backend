@@ -8,7 +8,17 @@ const getAllProducts = async (req, res) => {
         res.status(500).json({ message: err.message });
     }
 }
-
+const getProductById = async (req, res) => {
+    try {
+      const product = await Product.findById(req.params.id);
+      if (!product) {
+        return res.status(404).json({ message: 'Product not found' });
+      }
+      res.json(product);
+    } catch (err) {
+      res.status(500).json({ message: err.message });
+    }
+  }
 const createProduct = async (req, res) => {
     try {
         const { name, price, description, productImage, category, inventory, averageRating } = req.body;
@@ -32,20 +42,23 @@ const createProduct = async (req, res) => {
 const updateProduct = async (req, res) => {
     try {
         const { id } = req.params;
-        const product = await Product.findById(id);
-        const validationDetais = validateProduct(req.body);
-        if (!validationDetais['flag']) {
+        if(!id){
             res.status(501).json({
                 status: 501,
-                message: validationDetais.message
+                message: 'Product id can not be empty'
             });
             return;
         }
-        const newProduct = await Product.create({
-            name, price, description, productImage, category, inventory, averageRating
-        })
-        console.log('a new product added',newProduct)
-        res.status(201).json(newProduct);
+        const updatedProduct = await Product.findByIdAndUpdate(
+            id,
+            req.body,
+            { new: true }
+          );
+        
+        if (!updatedProduct) {
+            return res.status(404).json({ message: 'Product not found' });
+          }
+          res.json(updatedProduct);
     } catch (error) {
         res.status(400).json({ message: error.message });
     }
@@ -90,4 +103,4 @@ const validateProduct = (product) => {
     return { flag, message }
 }
 
-export { getAllProducts, createProduct }
+export { getAllProducts, createProduct, updateProduct, getProductById }
